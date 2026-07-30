@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAdvogadosRouteImport } from './routes/_authenticated/advogados'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDistribuicaoRouteImport } from './routes/_authenticated/distribuicao'
 import { Route as AuthenticatedEmpresasRouteImport } from './routes/_authenticated/empresas'
 
 const IndexRoute = IndexRouteImport.update({
@@ -34,6 +35,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDistribuicaoRoute =
+  AuthenticatedDistribuicaoRouteImport.update({
+    id: '/distribuicao',
+    path: '/distribuicao',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEmpresasRoute = AuthenticatedEmpresasRouteImport.update({
   id: '/empresas',
   path: '/empresas',
@@ -44,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/advogados': typeof AuthenticatedAdvogadosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/distribuicao': typeof AuthenticatedDistribuicaoRoute
   '/empresas': typeof AuthenticatedEmpresasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/advogados': typeof AuthenticatedAdvogadosRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/distribuicao': typeof AuthenticatedDistribuicaoRoute
   '/empresas': typeof AuthenticatedEmpresasRoute
 }
 export interface FileRoutesById {
@@ -58,19 +67,21 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/advogados': typeof AuthenticatedAdvogadosRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/distribuicao': typeof AuthenticatedDistribuicaoRoute
   '/_authenticated/empresas': typeof AuthenticatedEmpresasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/advogados' | '/dashboard' | '/empresas'
+  fullPaths: '/' | '/advogados' | '/dashboard' | '/distribuicao' | '/empresas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/advogados' | '/dashboard' | '/empresas'
+  to: '/' | '/advogados' | '/dashboard' | '/distribuicao' | '/empresas'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/advogados'
     | '/_authenticated/dashboard'
+    | '/_authenticated/distribuicao'
     | '/_authenticated/empresas'
   fileRoutesById: FileRoutesById
 }
@@ -109,6 +120,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/distribuicao': {
+      id: '/_authenticated/distribuicao'
+      path: '/distribuicao'
+      fullPath: '/distribuicao'
+      preLoaderRoute: typeof AuthenticatedDistribuicaoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/empresas': {
       id: '/_authenticated/empresas'
       path: '/empresas'
@@ -122,12 +140,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdvogadosRoute: typeof AuthenticatedAdvogadosRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDistribuicaoRoute: typeof AuthenticatedDistribuicaoRoute
   AuthenticatedEmpresasRoute: typeof AuthenticatedEmpresasRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdvogadosRoute: AuthenticatedAdvogadosRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDistribuicaoRoute: AuthenticatedDistribuicaoRoute,
   AuthenticatedEmpresasRoute: AuthenticatedEmpresasRoute,
 }
 

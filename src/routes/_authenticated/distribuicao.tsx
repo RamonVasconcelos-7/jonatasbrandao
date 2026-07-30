@@ -63,7 +63,7 @@ function Atribuir({
   const invalidate = useInvalidate();
 
   const update = async (patch: Record<string, string | null>) => {
-    const { error } = await supabase.from("processos").update(patch).eq("id", processo.id);
+    const { error } = await supabase.from("processos").update(patch as never).eq("id", processo.id);
     if (error) toast.error(error.message);
     else {
       toast.success("Processo atualizado");
