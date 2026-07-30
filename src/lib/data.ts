@@ -111,13 +111,14 @@ export function useSaveProcesso() {
   return useMutation({
     mutationFn: async ({ id, values }: { id?: string; values: Record<string, unknown> }) => {
       if (id) {
-        const { error } = await supabase.from("processos").update(values).eq("id", id);
+        const { error } = await supabase.from("processos").update(values as never).eq("id", id);
         if (error) throw error;
       } else {
         const { error } = await supabase.from("processos").insert(values as never);
         if (error) throw error;
       }
     },
+
     onSuccess: () => invalidate(["processos"]),
   });
 }
