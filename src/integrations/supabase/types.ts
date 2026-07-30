@@ -14,16 +14,268 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      advogado_empresas: {
+        Row: {
+          advogado_id: string
+          empresa_id: string
+        }
+        Insert: {
+          advogado_id: string
+          empresa_id: string
+        }
+        Update: {
+          advogado_id?: string
+          empresa_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advogado_empresas_advogado_id_fkey"
+            columns: ["advogado_id"]
+            isOneToOne: false
+            referencedRelation: "advogados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advogado_empresas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      advogados: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          oab: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          oab?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          oab?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      areas: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      empresas: {
+        Row: {
+          cor: string
+          created_at: string
+          id: string
+          nome: string
+        }
+        Insert: {
+          cor?: string
+          created_at?: string
+          id?: string
+          nome: string
+        }
+        Update: {
+          cor?: string
+          created_at?: string
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      movimentacoes: {
+        Row: {
+          created_at: string
+          data: string
+          descricao: string
+          id: string
+          processo_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          descricao: string
+          id?: string
+          processo_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          descricao?: string
+          id?: string
+          processo_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_processo_id_fkey"
+            columns: ["processo_id"]
+            isOneToOne: false
+            referencedRelation: "processos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      processos: {
+        Row: {
+          advogado_id: string | null
+          area_id: string | null
+          classe: string | null
+          created_at: string
+          data_audiencia: string | null
+          data_autuacao: string | null
+          empresa_id: string | null
+          id: string
+          numero: string
+          observacoes: string | null
+          parte_contraria: string | null
+          status: Database["public"]["Enums"]["processo_status"]
+          ultima_movimentacao_data: string | null
+          ultima_movimentacao_texto: string | null
+          updated_at: string
+          valor_acao: number | null
+          vara: string | null
+        }
+        Insert: {
+          advogado_id?: string | null
+          area_id?: string | null
+          classe?: string | null
+          created_at?: string
+          data_audiencia?: string | null
+          data_autuacao?: string | null
+          empresa_id?: string | null
+          id?: string
+          numero: string
+          observacoes?: string | null
+          parte_contraria?: string | null
+          status?: Database["public"]["Enums"]["processo_status"]
+          ultima_movimentacao_data?: string | null
+          ultima_movimentacao_texto?: string | null
+          updated_at?: string
+          valor_acao?: number | null
+          vara?: string | null
+        }
+        Update: {
+          advogado_id?: string | null
+          area_id?: string | null
+          classe?: string | null
+          created_at?: string
+          data_audiencia?: string | null
+          data_autuacao?: string | null
+          empresa_id?: string | null
+          id?: string
+          numero?: string
+          observacoes?: string | null
+          parte_contraria?: string | null
+          status?: Database["public"]["Enums"]["processo_status"]
+          ultima_movimentacao_data?: string | null
+          ultima_movimentacao_texto?: string | null
+          updated_at?: string
+          valor_acao?: number | null
+          vara?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "processos_advogado_id_fkey"
+            columns: ["advogado_id"]
+            isOneToOne: false
+            referencedRelation: "advogados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "processos_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "processos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          nome: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          nome?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "advogado"
+      processo_status: "Aguardando" | "Em Progresso" | "Concluído"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +402,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "advogado"],
+      processo_status: ["Aguardando", "Em Progresso", "Concluído"],
+    },
   },
 } as const
