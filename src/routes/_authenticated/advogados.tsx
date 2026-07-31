@@ -8,6 +8,7 @@ import { ProcessoForm } from "@/components/ProcessoForm";
 import { aplicarFiltros } from "@/lib/filtros";
 import { useAuth } from "@/lib/auth";
 import { useAdvogados, useAreas, useEmpresas, useProcessos, type Processo } from "@/lib/data";
+import { User } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/advogados")({
   head: () => ({
@@ -72,7 +73,8 @@ function AdvogadosPage() {
       <Tabs defaultValue={visiveis[0].id}>
         <TabsList className="flex-wrap">
           {visiveis.map((a) => (
-            <TabsTrigger key={a.id} value={a.id}>
+            <TabsTrigger key={a.id} value={a.id} className="gap-1.5">
+              <User className="h-3.5 w-3.5" />
               {a.nome}
             </TabsTrigger>
           ))}

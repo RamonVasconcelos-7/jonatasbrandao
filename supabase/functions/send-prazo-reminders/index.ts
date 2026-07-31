@@ -1,12 +1,30 @@
-// Roda uma vez por dia (agendado via pg_cron, ver migration 20260731010100_cron_prazo_reminders.sql).
-// Envia e-mail para o advogado responsável 3 dias e 1 dia antes de cada prazo fatal não cumprido.
+// Roda uma vez por dia (agendado via pg_cron, ver supabase/cron-setup.sql).
+// Envia e-mail simples para o advogado responsável 3 dias antes, 1 dia antes e no
+// próprio dia em que um prazo não cumprido vence.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { baseTemplate, sendEmail } from "../_shared/email.ts";
+import { sendEmail } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-cron-secret",
+};
+
+// Nome curto e em maiúsculas para o e-mail, ex.: "CONTESTAÇÃO".
+const TIPO_CURTO: Record<string, string> = {
+  Audiencia: "AUDIÊNCIA",
+  Manifestacao_Parte_Contraria: "MANIFESTAÇÃO DA PARTE CONTRÁRIA",
+  Aguardando_Sentenca_Decisao: "SENTENÇA/DECISÃO",
+  Contestacao: "CONTESTAÇÃO",
+  Replica_Impugnacao: "RÉPLICA/IMPUGNAÇÃO",
+  Recurso_Apelacao: "RECURSO",
+  Contrarrazoes: "CONTRARRAZÕES",
+  Embargos_Declaracao: "EMBARGOS DE DECLARAÇÃO",
+  Cumprimento_Sentenca: "CUMPRIMENTO DE SENTENÇA",
+  Prazo_Interno_Escritorio: "PRAZO INTERNO",
+  Diligencia: "DILIGÊNCIA",
+  Pericia: "PERÍCIA",
+  Outro: "PRAZO",
 };
 
 function toISODate(d: Date) {
@@ -31,20 +49,24 @@ Deno.serve(async (req) => {
   );
 
   const hoje = new Date();
-  const em3dias = toISODate(new Date(hoje.getTime() + 3 * 86400000));
-  const em1dia = toISODate(new Date(hoje.getTime() + 1 * 86400000));
+  const alvos: {
+    data: string;
+    campo: "notificado_3d" | "notificado_1d" | "notificado_0d";
+    dias: number;
+  }[] = [
+    { data: toISODate(new Date(hoje.getTime() + 3 * 86400000)), campo: "notificado_3d", dias: 3 },
+    { data: toISODate(new Date(hoje.getTime() + 1 * 86400000)), campo: "notificado_1d", dias: 1 },
+    { data: toISODate(hoje), campo: "notificado_0d", dias: 0 },
+  ];
 
   let enviados = 0;
   let erros = 0;
 
-  for (const { data: alvo, campo } of [
-    { data: em3dias, campo: "notificado_3d" as const },
-    { data: em1dia, campo: "notificado_1d" as const },
-  ]) {
+  for (const { data: alvo, campo, dias } of alvos) {
     const { data: prazos, error } = await supabase
       .from("prazos")
       .select(
-        "id, tipo, data, descricao, cumprido, notificado_3d, notificado_1d, processos(numero, advogados(nome, email))",
+        "id, tipo, data, cumprido, notificado_3d, notificado_1d, notificado_0d, processos(numero, advogados(nome, email))",
       )
       .eq("data", alvo)
       .eq("cumprido", false)
@@ -63,22 +85,20 @@ Deno.serve(async (req) => {
       } | null;
       const advogado = processo?.advogados ?? null;
 
-      if (!advogado?.email) continue;
+      if (!advogado?.email || !processo) continue;
 
-      const diasRestantes = campo === "notificado_3d" ? 3 : 1;
-      const html = baseTemplate(
-        `Prazo em ${diasRestantes} dia${diasRestantes > 1 ? "s" : ""}`,
-        `<p>Olá, ${advogado.nome}.</p>
-         <p>O processo <strong>${processo?.numero}</strong> tem um prazo vencendo em
-         <strong>${diasRestantes} dia${diasRestantes > 1 ? "s" : ""}</strong> (${prazo.data}).</p>
-         <p>Tipo: ${prazo.tipo}</p>
-         ${prazo.descricao ? `<p>${prazo.descricao}</p>` : ""}`,
-      );
+      const tipoLabel = TIPO_CURTO[prazo.tipo] ?? prazo.tipo;
+      const texto =
+        dias === 0
+          ? `Processo ${processo.numero} está com um prazo para ${tipoLabel} que vence hoje.`
+          : `Processo ${processo.numero} está com um prazo para ${tipoLabel} daqui a ${dias} dia${dias > 1 ? "s" : ""}.`;
 
       const result = await sendEmail(
         advogado.email,
-        `Prazo em ${diasRestantes} dia(s) — processo ${processo?.numero}`,
-        html,
+        dias === 0
+          ? `Prazo vence hoje — processo ${processo.numero}`
+          : `Prazo em ${dias} dia(s) — processo ${processo.numero}`,
+        texto,
       );
 
       if (result.ok) {

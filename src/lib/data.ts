@@ -22,6 +22,14 @@ export type AdvogadoRow = {
   email: string | null;
 };
 
+export type ContaUsuario = {
+  id: string;
+  nome: string;
+  email: string | null;
+  created_at: string;
+  isAdmin: boolean;
+};
+
 export type TipoPrazo =
   | "Audiencia"
   | "Manifestacao_Parte_Contraria"
@@ -78,6 +86,7 @@ export type Prazo = {
   cumprido: boolean;
   notificado_3d: boolean;
   notificado_1d: boolean;
+  notificado_0d: boolean;
   created_at: string;
 };
 
@@ -144,6 +153,42 @@ export function useAdvogados() {
   });
 }
 
+/** Todas as contas cadastradas (profiles) com indicação de quem é admin — visão do administrador. */
+export function useContas() {
+  return useQuery({
+    queryKey: ["contas"],
+    queryFn: async () => {
+      const [profilesRes, rolesRes] = await Promise.all([
+        supabase.from("profiles").select("id, nome, email, created_at").order("created_at"),
+        supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
+      ]);
+      if (profilesRes.error) throw profilesRes.error;
+      if (rolesRes.error) throw rolesRes.error;
+      const admins = new Set((rolesRes.data ?? []).map((r) => r.user_id));
+      return (profilesRes.data ?? []).map((p) => ({
+        id: p.id,
+        nome: p.nome,
+        email: p.email,
+        created_at: p.created_at,
+        isAdmin: admins.has(p.id),
+      })) as ContaUsuario[];
+    },
+  });
+}
+
+export function useSetAdminRole() {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
+      const { error } = await supabase.rpc("set_admin_role", {
+        _target_user_id: userId,
+        _is_admin: isAdmin,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => invalidate(["contas"]),
+  });
+}
 export function usePrazos(processoId: string | null) {
   return useQuery({
     queryKey: ["prazos", processoId],

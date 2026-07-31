@@ -12,16 +12,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   EMPRESA_TIPO_LABEL,
   EMPRESA_TIPO_LIST,
   useAdvogados,
   useAreas,
+  useContas,
   useEmpresas,
   useInvalidate,
+  useSetAdminRole,
   type EmpresaTipo,
 } from "@/lib/data";
+import { ShieldCheck, User } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/cadastros")({
   beforeLoad: async ({ context }) => {
@@ -44,6 +48,45 @@ export const Route = createFileRoute("/_authenticated/cadastros")({
   }),
   component: CadastrosPage,
 });
+
+function ContaRow({ conta, souEu }: { conta: import("@/lib/data").ContaUsuario; souEu: boolean }) {
+  const setAdmin = useSetAdminRole();
+  return (
+    <li className="flex items-center justify-between gap-2 border-b border-border pb-2 text-sm last:border-0 last:pb-0">
+      <span className="flex items-center gap-2 truncate">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <User className="h-3.5 w-3.5" />
+        </span>
+        <span className="truncate">
+          <span className="block truncate font-medium">{conta.nome}</span>
+          <span className="block truncate text-xs text-muted-foreground">{conta.email}</span>
+        </span>
+      </span>
+      <Button
+        size="sm"
+        variant={conta.isAdmin ? "default" : "outline"}
+        className="shrink-0 gap-1.5 text-xs"
+        disabled={setAdmin.isPending || (conta.isAdmin && souEu)}
+        title={conta.isAdmin && souEu ? "Você não pode remover seu próprio acesso de admin" : ""}
+        onClick={() =>
+          setAdmin.mutate(
+            { userId: conta.id, isAdmin: !conta.isAdmin },
+            {
+              onSuccess: () =>
+                toast.success(
+                  conta.isAdmin ? "Removido dos administradores" : "Agora é administrador",
+                ),
+              onError: (err: unknown) => toast.error((err as Error).message ?? "Erro ao atualizar"),
+            },
+          )
+        }
+      >
+        <ShieldCheck className="h-3.5 w-3.5" />
+        {conta.isAdmin ? "Admin" : "Tornar admin"}
+      </Button>
+    </li>
+  );
+}
 
 function AdvogadoEmailField({ id, emailAtual }: { id: string; emailAtual: string | null }) {
   const invalidate = useInvalidate();
@@ -86,10 +129,12 @@ function AdvogadoEmailField({ id, emailAtual }: { id: string; emailAtual: string
 }
 
 function CadastrosPage() {
+  const { user } = useAuth();
   const invalidate = useInvalidate();
   const { data: empresas = [] } = useEmpresas();
   const { data: areas = [] } = useAreas();
   const { data: advogados = [] } = useAdvogados();
+  const { data: contas = [] } = useContas();
 
   const [empresaNome, setEmpresaNome] = useState("");
   const [empresaCor, setEmpresaCor] = useState("#1e3a5f");
@@ -287,9 +332,12 @@ function CadastrosPage() {
                 className="space-y-1 border-b border-border pb-2 last:border-0 last:pb-0"
               >
                 <div className="flex items-center justify-between">
-                  <span>
+                  <span className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <User className="h-3.5 w-3.5" />
+                    </span>
                     {a.nome}
-                    <span className="ml-2 text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       {a.oab ? `OAB ${a.oab}` : "sem OAB"}
                       {a.user_id ? " · login vinculado" : ""}
                     </span>
@@ -301,6 +349,22 @@ function CadastrosPage() {
                 <AdvogadoEmailField id={a.id} emailAtual={a.email} />
               </li>
             ))}
+          </ul>
+        </Card>
+
+        <Card className="space-y-3 p-4 lg:col-span-3">
+          <h2 className="text-sm font-semibold">Contas cadastradas no sistema</h2>
+          <p className="text-xs text-muted-foreground">
+            Todos que já criaram login no site. Use o botão para dar ou remover acesso de
+            administrador.
+          </p>
+          <ul className="space-y-2">
+            {contas.map((c) => (
+              <ContaRow key={c.id} conta={c} souEu={c.id === user?.id} />
+            ))}
+            {contas.length === 0 && (
+              <p className="text-sm text-muted-foreground">Nenhuma conta cadastrada ainda.</p>
+            )}
           </ul>
         </Card>
       </div>

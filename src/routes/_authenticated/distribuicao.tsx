@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus } from "lucide-react";
+import { Plus, User } from "lucide-react";
 import { toast } from "sonner";
 import { Filtros, filtroInicial, type FiltroState } from "@/components/Filtros";
 import { ProcessoCard } from "@/components/ProcessoCard";
@@ -71,6 +71,11 @@ function Atribuir({
     else {
       toast.success("Processo atualizado");
       invalidate(["processos"]);
+      if (patch.advogado_id) {
+        supabase.functions
+          .invoke("notify-processo-atribuido", { body: { processo_id: processo.id } })
+          .catch(() => {});
+      }
     }
   };
 
@@ -87,7 +92,9 @@ function Atribuir({
           <SelectItem value="none">Não distribuído</SelectItem>
           {advogados.map((a) => (
             <SelectItem key={a.id} value={a.id}>
-              {a.nome}
+              <span className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5" /> {a.nome}
+              </span>
             </SelectItem>
           ))}
         </SelectContent>

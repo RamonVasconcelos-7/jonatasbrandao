@@ -17,7 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { User } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   STATUS_LIST,
   useSaveProcesso,
@@ -131,6 +133,11 @@ export function ProcessoForm({ open, processo, empresas, areas, advogados, onOpe
       {
         onSuccess: () => {
           toast.success(processo ? "Processo atualizado" : "Processo cadastrado");
+          if (processo && values.advogado_id && values.advogado_id !== processo.advogado_id) {
+            supabase.functions
+              .invoke("notify-processo-atribuido", { body: { processo_id: processo.id } })
+              .catch(() => {});
+          }
           onOpenChange(false);
         },
         onError: (err: unknown) => toast.error((err as Error).message ?? "Erro ao salvar"),
@@ -194,17 +201,24 @@ export function ProcessoForm({ open, processo, empresas, areas, advogados, onOpe
             <Label>Advogado responsável</Label>
             <Select value={form.advogado_id} onValueChange={(v) => set("advogado_id", v)}>
               <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Selecione" />
+                <SelectValue placeholder="Anexar advogado" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={NONE}>Não distribuído</SelectItem>
                 {advogados.map((a) => (
                   <SelectItem key={a.id} value={a.id}>
-                    {a.nome}
+                    <span className="flex items-center gap-1.5">
+                      <User className="h-3.5 w-3.5" /> {a.nome}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {advogados.length === 0 && (
+              <p className="mt-1 text-xs text-destructive">
+                Nenhum advogado cadastrado ainda — cadastre em "Cadastros".
+              </p>
+            )}
           </div>
 
           <div>

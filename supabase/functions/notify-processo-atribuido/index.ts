@@ -1,7 +1,9 @@
-// Dispara um e-mail para o advogado responsável quando um processo é cadastrado/distribuído a ele.
-// Chamado pelo frontend logo após o insert em `processos` (ver useSaveProcesso em src/lib/data.ts).
+// Dispara um e-mail simples para o advogado responsável quando um processo é
+// cadastrado/distribuído a ele. Chamado pelo frontend logo após o insert em `processos`
+// e também quando o campo advogado_id de um processo já existente é alterado
+// (ver useSaveProcesso e o "Atribuir" da tela de Distribuição).
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { baseTemplate, sendEmail } from "../_shared/email.ts";
+import { sendEmail } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,7 +29,7 @@ Deno.serve(async (req) => {
 
     const { data: processo, error } = await supabase
       .from("processos")
-      .select("numero, classe, advogados(nome, email), empresas(nome)")
+      .select("numero, advogados(nome, email)")
       .eq("id", processo_id)
       .maybeSingle();
 
@@ -39,7 +41,6 @@ Deno.serve(async (req) => {
     }
 
     const advogado = processo.advogados as unknown as { nome: string; email: string | null } | null;
-    const empresa = processo.empresas as unknown as { nome: string } | null;
 
     if (!advogado?.email) {
       return new Response(JSON.stringify({ ok: true, skipped: "advogado sem e-mail cadastrado" }), {
@@ -47,15 +48,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const html = baseTemplate(
-      "Novo processo distribuído a você",
-      `<p>Olá, ${advogado.nome}.</p>
-       <p>O processo <strong>${processo.numero}</strong>${empresa ? ` (${empresa.nome})` : ""} foi cadastrado e distribuído para você.</p>
-       ${processo.classe ? `<p>Classe: ${processo.classe}</p>` : ""}
-       <p>Acesse o sistema para ver todos os detalhes e prazos.</p>`,
+    const result = await sendEmail(
+      advogado.email,
+      `Processo ${processo.numero} atribuído a você`,
+      `Processo ${processo.numero} foi cadastrado e atribuído a você.`,
     );
-
-    const result = await sendEmail(advogado.email, `Novo processo: ${processo.numero}`, html);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

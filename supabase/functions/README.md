@@ -5,8 +5,8 @@ Duas edge functions cuidam dos e-mails automáticos pedidos:
 - `notify-processo-atribuido`: dispara um e-mail para o advogado quando um processo novo é
   cadastrado e já distribuído para ele. É chamada automaticamente pelo frontend
   (`useSaveProcesso` em `src/lib/data.ts`) logo depois do cadastro.
-- `send-prazo-reminders`: dispara e-mails 3 dias e 1 dia antes de cada prazo fatal não cumprido.
-  Precisa rodar uma vez por dia — ver `supabase/cron-setup.sql`.
+- `send-prazo-reminders`: dispara e-mails 3 dias antes, 1 dia antes e no próprio dia em que um
+  prazo fatal não cumprido vence. Precisa rodar uma vez por dia — ver `supabase/cron-setup.sql`.
 
 Ambas usam [Resend](https://resend.com) para o envio. Passos para colocar no ar:
 

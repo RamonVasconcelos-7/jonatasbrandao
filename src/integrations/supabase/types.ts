@@ -228,6 +228,7 @@ export type Database = {
           data: string;
           descricao: string | null;
           id: string;
+          notificado_0d: boolean;
           notificado_1d: boolean;
           notificado_3d: boolean;
           processo_id: string;
@@ -239,6 +240,7 @@ export type Database = {
           data: string;
           descricao?: string | null;
           id?: string;
+          notificado_0d?: boolean;
           notificado_1d?: boolean;
           notificado_3d?: boolean;
           processo_id: string;
@@ -250,6 +252,7 @@ export type Database = {
           data?: string;
           descricao?: string | null;
           id?: string;
+          notificado_0d?: boolean;
           notificado_1d?: boolean;
           notificado_3d?: boolean;
           processo_id?: string;
@@ -315,6 +318,13 @@ export type Database = {
           _user_id: string;
         };
         Returns: boolean;
+      };
+      set_admin_role: {
+        Args: {
+          _is_admin: boolean;
+          _target_user_id: string;
+        };
+        Returns: undefined;
       };
     };
     Enums: {
