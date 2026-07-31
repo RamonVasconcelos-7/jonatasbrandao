@@ -36,12 +36,12 @@ export const Route = createFileRoute("/_authenticated/distribuicao")({
   },
   head: () => ({
     meta: [
-      { title: "Distribuição de processos — Gestão Jurídica" },
+      { title: "Distribuição de processos — Jônatas Brandão" },
       {
         name: "description",
         content: "Cadastro de novos processos e distribuição para advogados e áreas.",
       },
-      { property: "og:title", content: "Distribuição de processos — Gestão Jurídica" },
+      { property: "og:title", content: "Distribuição de processos — Jônatas Brandão" },
       {
         property: "og:description",
         content: "Abastecimento e atribuição de processos do escritório.",
@@ -63,7 +63,10 @@ function Atribuir({
   const invalidate = useInvalidate();
 
   const update = async (patch: Record<string, string | null>) => {
-    const { error } = await supabase.from("processos").update(patch as never).eq("id", processo.id);
+    const { error } = await supabase
+      .from("processos")
+      .update(patch as never)
+      .eq("id", processo.id);
     if (error) toast.error(error.message);
     else {
       toast.success("Processo atualizado");

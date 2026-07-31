@@ -13,12 +13,12 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Entrar — Gestão Jurídica" },
+      { title: "Entrar — Jônatas Brandão" },
       {
         name: "description",
         content: "Acesse o sistema de gestão de processos jurídicos do escritório.",
       },
-      { property: "og:title", content: "Entrar — Gestão Jurídica" },
+      { property: "og:title", content: "Entrar — Jônatas Brandão" },
       { property: "og:description", content: "Acesso restrito à equipe do escritório." },
     ],
   }),
@@ -81,7 +81,7 @@ function AuthPage() {
       <Card className="w-full max-w-sm p-6">
         <div className="flex items-center gap-2">
           <Scale className="h-5 w-5 text-primary" />
-          <h1 className="font-serif text-lg text-foreground">Gestão Jurídica</h1>
+          <h1 className="font-serif text-lg text-foreground">Jônatas Brandão</h1>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           {modo === "login" ? "Acesse sua conta" : "Crie sua conta de acesso"}

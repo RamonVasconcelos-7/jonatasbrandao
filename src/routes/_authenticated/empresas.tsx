@@ -12,12 +12,12 @@ import { useAdvogados, useAreas, useEmpresas, useProcessos, type Processo } from
 export const Route = createFileRoute("/_authenticated/empresas")({
   head: () => ({
     meta: [
-      { title: "Processos por empresa — Gestão Jurídica" },
+      { title: "Processos por empresa — Jônatas Brandão" },
       {
         name: "description",
         content: "Abas por empresa cliente com os processos organizados por área de atuação.",
       },
-      { property: "og:title", content: "Processos por empresa — Gestão Jurídica" },
+      { property: "og:title", content: "Processos por empresa — Jônatas Brandão" },
       {
         property: "og:description",
         content: "Processos de cada empresa cliente agrupados por área.",
@@ -38,10 +38,7 @@ function EmpresasPage() {
   const [editando, setEditando] = useState<Processo | null>(null);
   const [formOpen, setFormOpen] = useState(false);
 
-  const base = useMemo(
-    () => aplicarFiltros(processos, filtros),
-    [processos, filtros],
-  );
+  const base = useMemo(() => aplicarFiltros(processos, filtros), [processos, filtros]);
 
   if (empresas.length === 0) {
     return <p className="text-sm text-muted-foreground">Nenhuma empresa cadastrada.</p>;

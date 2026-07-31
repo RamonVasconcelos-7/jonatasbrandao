@@ -1,5 +1,13 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Scale, LayoutDashboard, Building2, Users, Inbox, Settings, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Building2,
+  Users,
+  Inbox,
+  Settings,
+  LogOut,
+  CalendarDays,
+} from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -9,6 +17,7 @@ import type { ReactNode } from "react";
 
 const links = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard, adminOnly: false },
+  { to: "/calendario", label: "Calendário", icon: CalendarDays, adminOnly: false },
   { to: "/empresas", label: "Empresas", icon: Building2, adminOnly: false },
   { to: "/advogados", label: "Advogados", icon: Users, adminOnly: false },
   { to: "/distribuicao", label: "Distribuição", icon: Inbox, adminOnly: true },
@@ -33,8 +42,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 border-b border-border bg-sidebar text-sidebar-foreground">
         <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <Scale className="h-5 w-5 text-sidebar-primary" />
-            <span className="font-serif text-base tracking-tight">Gestão Jurídica</span>
+            <img src="/brand/logo.png" alt="Jônatas Brandão" className="h-7 w-auto" />
+            <span className="font-serif text-base tracking-tight">Jônatas Brandão</span>
           </Link>
           <nav className="flex flex-1 items-center gap-1">
             {links

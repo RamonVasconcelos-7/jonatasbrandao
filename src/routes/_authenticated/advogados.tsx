@@ -12,12 +12,13 @@ import { useAdvogados, useAreas, useEmpresas, useProcessos, type Processo } from
 export const Route = createFileRoute("/_authenticated/advogados")({
   head: () => ({
     meta: [
-      { title: "Área dos advogados — Gestão Jurídica" },
+      { title: "Área dos advogados — Jônatas Brandão" },
       {
         name: "description",
-        content: "Processos de cada advogado agrupados por tipo de processo, com filtro por empresa.",
+        content:
+          "Processos de cada advogado agrupados por tipo de processo, com filtro por empresa.",
       },
-      { property: "og:title", content: "Área dos advogados — Gestão Jurídica" },
+      { property: "og:title", content: "Área dos advogados — Jônatas Brandão" },
       {
         property: "og:description",
         content: "Carteira de processos de cada advogado do escritório.",
@@ -38,9 +39,7 @@ function AdvogadosPage() {
   const [editando, setEditando] = useState<Processo | null>(null);
   const [formOpen, setFormOpen] = useState(false);
 
-  const visiveis = isAdmin
-    ? advogados
-    : advogados.filter((a) => a.id === meuAdvogado?.id);
+  const visiveis = isAdmin ? advogados : advogados.filter((a) => a.id === meuAdvogado?.id);
 
   const base = useMemo(() => aplicarFiltros(processos, filtros), [processos, filtros]);
 

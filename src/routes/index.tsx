@@ -1,18 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Scale, ShieldCheck, CalendarClock, Building2 } from "lucide-react";
+import { ShieldCheck, CalendarClock, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Gestão Jurídica — Controle de processos do escritório" },
+      { title: "Jônatas Brandão — Controle de processos do escritório" },
       {
         name: "description",
         content:
           "Centralize processos, prazos e audiências por empresa cliente, área e advogado responsável.",
       },
-      { property: "og:title", content: "Gestão Jurídica — Controle de processos" },
+      { property: "og:title", content: "Jônatas Brandão — Controle de processos" },
       {
         property: "og:description",
         content: "Painel de processos, prazos e distribuição para escritórios de advocacia.",
@@ -46,8 +46,8 @@ function Index() {
       <header className="border-b border-border bg-sidebar text-sidebar-foreground">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <span className="flex items-center gap-2">
-            <Scale className="h-5 w-5 text-sidebar-primary" />
-            <span className="font-serif text-base">Gestão Jurídica</span>
+            <img src="/brand/logo.png" alt="Jônatas Brandão" className="h-7 w-auto" />
+            <span className="font-serif text-base">Jônatas Brandão</span>
           </span>
           <Button asChild size="sm" variant="secondary">
             <Link to="/auth">Entrar</Link>

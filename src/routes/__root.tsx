@@ -14,7 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "../lib/auth";
 import { Toaster } from "../components/ui/sonner";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -80,17 +79,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Gestão Jurídica" },
+      { title: "Jônatas Brandão" },
       { name: "description", content: "Sistema de gestão de processos jurídicos do escritório." },
-      { name: "author", content: "Gestão Jurídica" },
-      { property: "og:title", content: "Gestão Jurídica" },
+      { name: "author", content: "Jônatas Brandão" },
+      { property: "og:title", content: "Jônatas Brandão" },
       {
         property: "og:description",
         content: "Sistema de gestão de processos jurídicos do escritório.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-
     ],
     links: [
       {
@@ -133,4 +131,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

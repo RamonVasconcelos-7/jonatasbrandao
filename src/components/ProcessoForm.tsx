@@ -73,14 +73,7 @@ const empty: FormState = {
   ultima_movimentacao_texto: "",
 };
 
-export function ProcessoForm({
-  open,
-  processo,
-  empresas,
-  areas,
-  advogados,
-  onOpenChange,
-}: Props) {
+export function ProcessoForm({ open, processo, empresas, areas, advogados, onOpenChange }: Props) {
   const [form, setForm] = useState<FormState>(empty);
   const save = useSaveProcesso();
 
